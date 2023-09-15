@@ -8,7 +8,7 @@ object DatabaseConnection {
     private var database: Database? = null
 
     fun connect(config: HoconApplicationConfig) {
-        val url = "jdbc:" + config.property("ktor.db.url").getString()
+        val url = config.property("ktor.db.url").getString()
         val user = config.property("ktor.db.user").getString()
         val password = config.property("ktor.db.password").getString()
 

@@ -7,7 +7,7 @@ interface User : Entity<User> {
     companion object : Entity.Factory<User>()
 
     val id: Long
-    val etuId: Long?
+    val login: String
     val email: String
     val password: String
 }

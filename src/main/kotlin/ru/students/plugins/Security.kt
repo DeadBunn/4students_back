@@ -13,7 +13,7 @@ fun Application.configureSecurity() {
                 TokenManager.verifyAccessToken()
             )
             validate { credential ->
-                if (credential.payload.getClaim("userId").asString().isNotEmpty()) {
+                if (credential.payload.getClaim("userId").toString().isNotEmpty()) {
                     JWTPrincipal(credential.payload)
                 } else null
             }

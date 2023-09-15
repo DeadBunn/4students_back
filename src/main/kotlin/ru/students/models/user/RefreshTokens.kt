@@ -6,5 +6,5 @@ import org.ktorm.schema.varchar
 
 object RefreshTokens: Table<Nothing>("refresh_token") {
     val userId = long("user_id").primaryKey()
-    val token = varchar("refresh_token")
+    val token = varchar("token")
 }

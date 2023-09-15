@@ -23,7 +23,6 @@ object TokenManager {
             .withAudience(audience)
             .withIssuer(issuer)
             .withClaim("userId", user.id)
-            .withClaim("etuId", user.etuId)
             .withExpiresAt(Instant.now().plusSeconds(accessExpires))
             .sign(Algorithm.HMAC256(accessSecret))
     }
@@ -33,7 +32,6 @@ object TokenManager {
             .withAudience(audience)
             .withIssuer(issuer)
             .withClaim("userId", user.id)
-            .withClaim("etuI", user.etuId)
             .withExpiresAt(Instant.now().plus(refreshExpires, ChronoUnit.DAYS))
             .sign(Algorithm.HMAC256(refreshSecret))
     }
