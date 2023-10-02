@@ -7,11 +7,11 @@ plugins {
     id("io.ktor.plugin") version "2.3.4"
 }
 
-group = "ru.vibelab"
+group = "ru.students"
 version = "0.0.1"
 
 application {
-    mainClass.set("ru.vibelab.ApplicationKt")
+    mainClass.set("ru.students.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
