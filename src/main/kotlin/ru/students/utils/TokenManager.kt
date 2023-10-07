@@ -23,6 +23,7 @@ object TokenManager {
             .withAudience(audience)
             .withIssuer(issuer)
             .withClaim("userId", user.id)
+            .withClaim("role", user.role.name)
             .withExpiresAt(Instant.now().plusSeconds(accessExpires))
             .sign(Algorithm.HMAC256(accessSecret))
     }
