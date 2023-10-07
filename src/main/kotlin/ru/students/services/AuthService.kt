@@ -11,11 +11,12 @@ import ru.vibelab.utils.TokenManager
 object AuthService {
 
     fun authenticate(credentials: UserCredentials): BaseResponse<JWTResponse> {
+        val error = BaseResponse<JWTResponse>(
+            message = "Неправильный логин или пароль",
+            code = HttpStatusCode.Unauthorized
+        )
         val user = UserRepo.findUserByEmail(credentials.email)
-            ?: return BaseResponse(
-                message = "Неправильный логин или пароль",
-                code = HttpStatusCode.Unauthorized
-            )
+            ?: return error
 
         return if (user.password == PasswordEncryptor.hash(credentials.password)) {
             val refreshToken = TokenManager.generateRefreshToken(user)
@@ -26,10 +27,7 @@ object AuthService {
                     refreshToken = refreshToken
                 )
             )
-        } else BaseResponse(
-            message = "Неправильный логин или пароль",
-            code = HttpStatusCode.Unauthorized
-        )
+        } else error
     }
 
     fun authenticateRefreshToken(token: String?): BaseResponse<JWTResponse> {
