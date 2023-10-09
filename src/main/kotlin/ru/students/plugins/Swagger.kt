@@ -1,6 +1,8 @@
 package ru.students.plugins
 
 import io.github.smiley4.ktorswaggerui.SwaggerUI
+import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
+import io.github.smiley4.ktorswaggerui.dsl.AuthType
 import io.ktor.server.application.*
 
 fun Application.configureSwagger() {
@@ -17,6 +19,10 @@ fun Application.configureSwagger() {
         server {
             url = "http://localhost:8080"
             description = "Development Server"
+        }
+        securityScheme("jwt") {
+            type = AuthType.HTTP
+            scheme = AuthScheme.BEARER
         }
     }
 }
