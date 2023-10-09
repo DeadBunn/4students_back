@@ -16,6 +16,7 @@ fun Application.module() {
     configureSerialization()
     configureRouting()
     configureFlyway()
+    configureSwagger()
 
     val config = HoconApplicationConfig(ConfigFactory.load())
     DatabaseConnection.connect(config)

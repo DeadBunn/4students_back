@@ -17,7 +17,4 @@ fun Application.configureHTTP() {
         allowHost("localhost:5001", listOf("http"))
         allowHost("194.85.169.95:9245", listOf("http"))
     }
-    routing {
-        swaggerUI(path = "openapi")
-    }
 }
