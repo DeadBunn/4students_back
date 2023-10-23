@@ -29,3 +29,11 @@
   docker compose stop - остановить контейнера
   docker compose logs --following - логи контейнера
 ```
+Сваггер - `http://localhost:8080/swagger-ui/index.html`  
+Аккаунты:  
+1.  
+email: user@mail.ru  
+password: String  
+2.  
+email: admin@mail.ru  
+password: String  
