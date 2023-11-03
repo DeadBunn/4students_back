@@ -15,7 +15,7 @@ fun Application.authRouting() {
         route("api/auth") {
 
             post("/login", {
-                tags = listOf("Авторизация")
+                tags = listOf("Регистрация и авторизация")
                 description = "Авторизация через логин и пароль"
                 request {
                     body<UserCredentials>()
@@ -37,7 +37,7 @@ fun Application.authRouting() {
             }
 
             post("/refresh", {
-                tags = listOf("Авторизация")
+                tags = listOf("Регистрация и авторизация")
                 description = "Авторизация через refresh-токен"
                 request {
                     pathParameter<String>("token")
