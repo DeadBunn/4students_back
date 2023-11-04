@@ -30,7 +30,6 @@ fun Application.module() {
         exposeHeader(HttpHeaders.ContentType)
         allowCredentials = true
         anyHost()
-        println("Cors has been configured with AccessControlAllowOrigin and ContentType")
     }
     configureSerialization()
     configureRouting()
