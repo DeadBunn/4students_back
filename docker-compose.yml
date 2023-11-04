@@ -18,3 +18,4 @@ services:
       - "8080:8080"
     volumes:
       - ./src:/app/src
+      - ./build.gradle.kts:/app/build.gradle.kts
