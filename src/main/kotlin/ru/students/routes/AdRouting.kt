@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.students.dtos.AdResponse
+import ru.students.models.ad.AdType
 import ru.students.services.AdService
 
 fun Application.adRouting() {
@@ -15,6 +16,14 @@ fun Application.adRouting() {
             get("", {
                 tags = listOf("Объявления")
                 description = "Получения списка объявлений"
+                request {
+                    pathParameter<AdType>("type") {
+                        description = "SERVICE - услуга, ORDER - заказ"
+                    }
+                    pathParameter<Long>("tag") {
+                        description = "тег (можно добавлять несколько)"
+                    }
+                }
                 response {
                     HttpStatusCode.OK to {
                         description = "Успешная получения списка объявлений"
@@ -23,8 +32,11 @@ fun Application.adRouting() {
                 }
             })
             {
+                val type = call.parameters["type"]
+                val tagIds = call.parameters.getAll("tag")
 
-                call.respond(AdService.getAdsResponses())
+                val tags: List<Long> = tagIds?.map { it.toLong() } ?: listOf()
+                call.respond(AdService.getAdsResponses(type, tags))
             }
         }
     }
