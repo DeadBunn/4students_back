@@ -11,6 +11,6 @@ create table if not exists ads
 
 create table if not exists ads_tags
 (
-    ad_id  bigint references "user",
+    ad_id  bigint references ads,
     tag_id bigint references tags
 )
