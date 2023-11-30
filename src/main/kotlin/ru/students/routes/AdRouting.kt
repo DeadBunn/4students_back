@@ -3,7 +3,7 @@ package ru.students.routes
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.*
-import io.ktor.http.cio.internals.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -14,6 +14,8 @@ import ru.students.dtos.AdResponse
 import ru.students.dtos.requests.CreateAdRequest
 import ru.students.models.ad.AdType
 import ru.students.services.AdService
+import ru.students.services.FileService
+import ru.students.services.GsonParser
 
 fun Application.adRouting() {
     routing {
@@ -53,11 +55,29 @@ fun Application.adRouting() {
                         body<CreateAdRequest>()
                     }
                 }) {
-                    val request = call.receive<CreateAdRequest>()
-                    val principal = call.principal<JWTPrincipal>()
-                    println(principal)
+                    val multipart = call.receiveMultipart()
+                    val fileIds = mutableListOf<Long>()
+                    var jsonValue: String? = null
+
+                    multipart.forEachPart { part ->
+                        when (part) {
+                            is PartData.FileItem -> {
+                                fileIds.add(FileService.saveFile(part))
+                            }
+
+                            is PartData.FormItem -> {
+                                jsonValue = part.value
+                            }
+
+                            else -> {}
+                        }
+                        part.dispose()
+                    }
+
+                    val request = GsonParser.parse(CreateAdRequest::class.java, jsonValue!!)
+
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
-                    call.respond(AdService.createAd(request, userId))
+                    call.respond(AdService.createAd(request, userId, fileIds))
                 }
             }
         }

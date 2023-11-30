@@ -18,5 +18,6 @@ interface Ad : Entity<Ad> {
     val type: AdType
     val user: User
     val tags get() = AdsTags.getList { it.adId eq id }.map { it.tag }
+    val files get() = AdsFiles.getList { it.adId eq id }.map { it.file }
 
 }

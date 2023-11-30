@@ -1,6 +1,5 @@
 package ru.students.services
 
-import io.ktor.http.cio.internals.*
 import ru.students.dtos.AdResponse
 import ru.students.dtos.requests.CreateAdRequest
 import ru.students.mappers.AdMapper
@@ -15,8 +14,12 @@ object AdService {
             .map(AdMapper::toResponse)
     }
 
-    fun createAd(request: CreateAdRequest, userId: Long): AdResponse {
+    fun createAd(request: CreateAdRequest, userId: Long, files: MutableList<Long>): AdResponse {
         val id = AdRepo.createAd(request, userId)
+
+        AdRepo.linkTagsToAd(id, request.tags)
+        AdRepo.linkFilesToAd(id, files)
+
         return AdMapper.toResponse(AdRepo.findAdById(id)!!)
     }
 }

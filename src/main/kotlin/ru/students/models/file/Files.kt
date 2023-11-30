@@ -8,4 +8,5 @@ object Files : Table<FileEntity>("files") {
 
     val id = long("file_id").primaryKey().bindTo { it.id }
     val name = varchar("name").bindTo { it.name }
+    val filePath = varchar("file_path").bindTo { it.filePath }
 }

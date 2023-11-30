@@ -8,4 +8,5 @@ interface FileEntity: Entity<FileEntity> {
 
     val id: Long
     val name: String
+    val filePath: String
 }

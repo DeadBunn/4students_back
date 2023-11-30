@@ -1,29 +1,39 @@
 package ru.students.services
 
+import io.ktor.http.content.*
+import ru.students.repos.FileRepo
 import java.io.File
-import java.io.InputStream
-import java.util.concurrent.atomic.AtomicLong
+import java.util.*
 
 object FileService {
-    private val fileIdCounter = AtomicLong(1)
-
     private const val STORAGE_DIRECTORY = "files"
 
     init {
         File(STORAGE_DIRECTORY).mkdirs()
     }
 
-    fun saveFile(inputStream: InputStream): Long {
-        val fileId = fileIdCounter.getAndIncrement()
-        val filePath = "$STORAGE_DIRECTORY/$fileId"
-        val outputFile = File(filePath)
-
-        // Save the file to the storage directory
-        outputFile.outputStream().use { outputStream ->
-            inputStream.copyTo(outputStream)
+    fun saveFile(fileItem: PartData.FileItem): Long {
+        val name = fileItem.originalFileName!!
+        val filePath = UUID.randomUUID().toString() + "." + getFileExtension(name)
+        val savePath = "$STORAGE_DIRECTORY/$filePath"
+        val outputFile = File(savePath)
+        fileItem.streamProvider().use { its ->
+            outputFile.outputStream().buffered().use {
+                its.copyTo(it)
+            }
         }
+        return FileRepo.adFile(name, filePath)
+    }
 
-        return fileId
+    private fun getFileExtension(fileName: String): String? {
+        val file = File(fileName)
+        val dotIndex = file.name.lastIndexOf('.')
+
+        return if (dotIndex > 0 && dotIndex < file.name.length - 1) {
+            file.name.substring(dotIndex + 1)
+        } else {
+            null
+        }
     }
 
     fun getFileById(fileId: Long): File? {

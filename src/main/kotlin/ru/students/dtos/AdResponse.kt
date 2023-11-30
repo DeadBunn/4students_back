@@ -8,5 +8,6 @@ data class AdResponse(
     val price: Int,
     val title: String,
     val description: String,
-    val type: AdType
+    val type: AdType,
+    val files: List<FileResponse>
 )
