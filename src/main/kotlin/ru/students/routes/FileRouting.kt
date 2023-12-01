@@ -12,27 +12,25 @@ import java.nio.file.Files
 fun Application.fileRouting() {
     routing {
         route("api/files") {
-            authenticate {
-                get("/{id}") {
-                    val id = call.parameters["id"]?.toLong()
-                    if (id != null) {
-                        val fileWithName = FileService.getFileById(id)
+            get("/{id}") {
+                val id = call.parameters["id"]?.toLong()
+                if (id != null) {
+                    val fileWithName = FileService.getFileById(id)
 
-                        if (fileWithName != null && fileWithName.first.exists()) {
+                    if (fileWithName != null && fileWithName.first.exists()) {
 
-                            val disposition = if (isImage(fileWithName.first)) "inline" else "attachment"
+                        val disposition = if (isImage(fileWithName.first)) "inline" else "attachment"
 
-                            call.response.header(
-                                "Content-Disposition",
-                                "$disposition; filename=\"${fileWithName.second}\""
-                            )
-                            call.respondFile(fileWithName.first)
-                        } else {
-                            call.respond(HttpStatusCode.NotFound, "Файл не найден")
-                        }
+                        call.response.header(
+                            "Content-Disposition",
+                            "$disposition; filename=\"${fileWithName.second}\""
+                        )
+                        call.respondFile(fileWithName.first)
                     } else {
-                        call.respond(HttpStatusCode.BadRequest, "Invalid file id")
+                        call.respond(HttpStatusCode.NotFound, "Файл не найден")
                     }
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, "Invalid file id")
                 }
             }
         }
