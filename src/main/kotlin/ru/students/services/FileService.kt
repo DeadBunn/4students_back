@@ -36,12 +36,15 @@ object FileService {
         }
     }
 
-    fun getFileById(fileId: Long): File? {
-        val filePath = "$STORAGE_DIRECTORY/$fileId"
+    fun getFileById(fileId: Long): Pair<File, String>? {
+
+        val fileEntity = FileRepo.findById(fileId) ?: return null
+
+        val filePath = "$STORAGE_DIRECTORY/${fileEntity.filePath}"
         val file = File(filePath)
 
         return if (file.exists()) {
-            file
+            Pair(file, fileEntity.name)
         } else {
             null
         }

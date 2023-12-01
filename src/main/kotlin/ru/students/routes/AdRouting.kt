@@ -56,26 +56,30 @@ fun Application.adRouting() {
                     }
                 }) {
                     val multipart = call.receiveMultipart()
-                    val fileIds = mutableListOf<Long>()
+                    val fileParts = mutableListOf<PartData.FileItem>()
                     var jsonValue: String? = null
-
                     multipart.forEachPart { part ->
                         when (part) {
                             is PartData.FileItem -> {
-                                fileIds.add(FileService.saveFile(part))
+                                fileParts.add(part)
                             }
 
                             is PartData.FormItem -> {
                                 jsonValue = part.value
+                                part.dispose()
                             }
 
-                            else -> {}
+                            else -> {
+                            }
                         }
-                        part.dispose()
                     }
-
+                    val fileIds = mutableListOf<Long>()
+                    fileParts.forEach { filePart ->
+                        val fileId = FileService.saveFile(filePart)
+                        fileIds.add(fileId)
+                        filePart.dispose()
+                    }
                     val request = GsonParser.parse(CreateAdRequest::class.java, jsonValue!!)
-
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
                     call.respond(AdService.createAd(request, userId, fileIds))
                 }
