@@ -8,4 +8,5 @@ object Users : Table<User>("user") {
     val email = varchar("email").bindTo { it.email }
     val password = varchar("password").bindTo { it.password }
     val role = enum<Role>("role").bindTo { it.role }
+    val balance = int("balance").bindTo { it.balance }
 }

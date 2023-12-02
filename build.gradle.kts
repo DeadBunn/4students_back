@@ -45,4 +45,5 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.4")
 }
