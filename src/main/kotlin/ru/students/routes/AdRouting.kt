@@ -46,7 +46,7 @@ fun Application.adRouting() {
             }
 
             authenticate {
-                get("", {
+                get("/my", {
                     tags = listOf("Объявления")
                     description = "Получения списка своих объявлений"
                     response {
