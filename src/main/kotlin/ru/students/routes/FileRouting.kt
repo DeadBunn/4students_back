@@ -1,8 +1,8 @@
 package ru.students.routes
 
+import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.students.services.FileService
@@ -12,7 +12,10 @@ import java.nio.file.Files
 fun Application.fileRouting() {
     routing {
         route("api/files") {
-            get("/{id}") {
+            get("/{id}", {
+                tags = listOf("Файлы")
+                description = "Получить файл по id"
+            }) {
                 val id = call.parameters["id"]?.toLong()
                 if (id != null) {
                     val fileWithName = FileService.getFileById(id)
