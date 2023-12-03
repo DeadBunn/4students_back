@@ -14,8 +14,6 @@ import ru.students.dtos.AdResponse
 import ru.students.dtos.requests.CreateAdRequest
 import ru.students.models.ad.AdType
 import ru.students.services.AdService
-import ru.students.services.FileService
-import ru.students.services.GsonParser
 
 fun Application.adRouting() {
     routing {
@@ -55,33 +53,10 @@ fun Application.adRouting() {
                         body<CreateAdRequest>()
                     }
                 }) {
-                    val multipart = call.receiveMultipart()
-                    val fileParts = mutableListOf<PartData.FileItem>()
-                    var jsonValue: String? = null
-                    multipart.forEachPart { part ->
-                        when (part) {
-                            is PartData.FileItem -> {
-                                fileParts.add(part)
-                            }
-
-                            is PartData.FormItem -> {
-                                jsonValue = part.value
-                                part.dispose()
-                            }
-
-                            else -> {
-                            }
-                        }
-                    }
-                    val fileIds = mutableListOf<Long>()
-                    fileParts.forEach { filePart ->
-                        val fileId = FileService.saveFile(filePart)
-                        fileIds.add(fileId)
-                        filePart.dispose()
-                    }
-                    val request = GsonParser.parse(CreateAdRequest::class.java, jsonValue!!)
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
-                    call.respond(AdService.createAd(request, userId, fileIds))
+                    val multipart: MultiPartData = call.receiveMultipart()
+                    val result = AdService.createAd(userId, multipart)
+                    call.respond(result.code, result.data ?: result.message)
                 }
             }
         }

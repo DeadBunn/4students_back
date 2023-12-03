@@ -11,4 +11,5 @@ interface User : Entity<User> {
     val email: String
     val password: String
     val role: Role
+    val balance: Int
 }

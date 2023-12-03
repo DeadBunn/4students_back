@@ -3,6 +3,7 @@ package ru.students.repos
 import org.ktorm.dsl.*
 import org.ktorm.entity.find
 import org.ktorm.entity.sequenceOf
+import org.ktorm.schema.Column
 import ru.students.models.user.RefreshTokens
 import ru.students.models.user.Role
 import ru.students.models.user.User
@@ -62,4 +63,21 @@ object UserRepo {
             .find { it.email eq email.lowercase() }
     }
 
+    fun replenishBalance(userId: Long, sum: Int) {
+        db.update(Users) {
+            set(it.balance, it.balance + sum)
+            where {
+                it.id eq userId
+            }
+        }
+    }
+
+    fun withDrawBalance(userId: Long, sum: Int) {
+        db.update(Users) {
+            set(it.balance, it.balance - sum)
+            where {
+                it.id eq userId
+            }
+        }
+    }
 }
