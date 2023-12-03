@@ -4,6 +4,7 @@ import io.ktor.http.cio.internals.*
 import org.ktorm.dsl.eq
 import org.ktorm.dsl.insert
 import org.ktorm.dsl.insertAndGenerateKey
+import org.ktorm.dsl.update
 import org.ktorm.entity.find
 import org.ktorm.entity.sequenceOf
 import org.ktorm.entity.toList
@@ -60,6 +61,15 @@ object AdRepo {
             db.insert(AdsFiles) {
                 set(it.adId, adId)
                 set(it.fileId, tag)
+            }
+        }
+    }
+
+    fun setIsModeratedForAd(adId: Long, isModerated: Boolean) {
+        db.update(Ads) {
+            set(it.isModerated, isModerated)
+            where {
+                it.id eq adId
             }
         }
     }

@@ -11,5 +11,6 @@ object Ads : Table<Ad>("ads") {
     val price = int("price").bindTo { it.price }
     val type = enum<AdType>("type").bindTo { it.type }
     val userId = long("user_id").references(Users) { it.user }
+    val isModerated = boolean("is_moderated").bindTo { it.isModerated }
     
 }

@@ -12,9 +12,18 @@ import ru.students.repos.AdRepo
 import ru.students.repos.UserRepo
 
 object AdService {
-    fun getAdsResponses(type: String?, tagIds: List<Long>): List<AdResponse> {
+    fun getAdsResponses(type: String?, tagIds: List<Long>, isModerated: Boolean?): List<AdResponse> {
 
         return AdRepo.getAdsList()
+            .filter { type == null || it.type.name == type }
+            .filter { tagIds.isEmpty() || it.tags.map { tag -> tag.id }.any { id: Long -> id in tagIds } }
+            .filter { isModerated == null || it.isModerated == isModerated }
+            .map(AdMapper::toResponse)
+    }
+
+    fun getUsersAds(userId: Long, type: String?, tagIds: List<Long>): List<AdResponse> {
+        return AdRepo.getAdsList()
+            .filter { it.user.id == userId }
             .filter { type == null || it.type.name == type }
             .filter { tagIds.isEmpty() || it.tags.map { tag -> tag.id }.any { id: Long -> id in tagIds } }
             .map(AdMapper::toResponse)
@@ -62,5 +71,8 @@ object AdService {
                 )
             )
         )
+    }
+    fun approveAd(adId: Long){
+        AdRepo.setIsModeratedForAd(adId, true)
     }
 }

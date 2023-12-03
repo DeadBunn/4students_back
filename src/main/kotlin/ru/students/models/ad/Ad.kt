@@ -17,6 +17,7 @@ interface Ad : Entity<Ad> {
     val price: Int
     val type: AdType
     val user: User
+    val isModerated: Boolean
     val tags get() = AdsTags.getList { it.adId eq id }.map { it.tag }
     val files get() = AdsFiles.getList { it.adId eq id }.map { it.file }
 
