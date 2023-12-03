@@ -21,9 +21,11 @@ object AdService {
             .map(AdMapper::toResponse)
     }
 
-    fun getUsersAds(userId: Long): List<AdResponse> {
+    fun getUsersAds(userId: Long, type: String?, tagIds: List<Long>): List<AdResponse> {
         return AdRepo.getAdsList()
             .filter { it.user.id == userId }
+            .filter { type == null || it.type.name == type }
+            .filter { tagIds.isEmpty() || it.tags.map { tag -> tag.id }.any { id: Long -> id in tagIds } }
             .map(AdMapper::toResponse)
     }
 

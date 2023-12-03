@@ -55,10 +55,27 @@ fun Application.adRouting() {
                             body<List<AdResponse>>()
                         }
                     }
+                    request {
+                        pathParameter<AdType>("type") {
+                            description = "SERVICE - услуга, ORDER - заказ"
+                        }
+                        pathParameter<Long>("tag") {
+                            description = "тег (можно добавлять несколько)"
+                        }
+                    }
+                    response {
+                        HttpStatusCode.OK to {
+                            description = "Успешная получения списка объявлений"
+                            body<List<AdResponse>>()
+                        }
+                    }
                 })
                 {
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
-                    call.respond(AdService.getUsersAds(userId))
+                    val type = call.parameters["type"]
+                    val tagIds = call.parameters.getAll("tag")
+                    val tags: List<Long> = tagIds?.map { it.toLong() } ?: listOf()
+                    call.respond(AdService.getUsersAds(userId, type, tags))
                 }
 
                 post("", {
