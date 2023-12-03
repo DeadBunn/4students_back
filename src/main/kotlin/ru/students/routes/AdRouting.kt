@@ -19,18 +19,36 @@ fun Application.adRouting() {
     routing {
         route("api/ads") {
 
+            get("", {
+                tags = listOf("Объявления")
+                description = "Получения списка объявлений"
+                request {
+                    pathParameter<AdType>("type") {
+                        description = "SERVICE - услуга, ORDER - заказ"
+                    }
+                    pathParameter<Long>("tag") {
+                        description = "тег (можно добавлять несколько)"
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Успешная получения списка объявлений"
+                        body<List<AdResponse>>()
+                    }
+                }
+            })
+            {
+                val type = call.parameters["type"]
+                val tagIds = call.parameters.getAll("tag")
+
+                val tags: List<Long> = tagIds?.map { it.toLong() } ?: listOf()
+                call.respond(AdService.getAdsResponses(type, tags, true))
+            }
+
             authenticate {
                 get("", {
                     tags = listOf("Объявления")
-                    description = "Получения списка объявлений"
-                    request {
-                        pathParameter<AdType>("type") {
-                            description = "SERVICE - услуга, ORDER - заказ"
-                        }
-                        pathParameter<Long>("tag") {
-                            description = "тег (можно добавлять несколько)"
-                        }
-                    }
+                    description = "Получения списка своих объявлений"
                     response {
                         HttpStatusCode.OK to {
                             description = "Успешная получения списка объявлений"
@@ -39,11 +57,8 @@ fun Application.adRouting() {
                     }
                 })
                 {
-                    val type = call.parameters["type"]
-                    val tagIds = call.parameters.getAll("tag")
-
-                    val tags: List<Long> = tagIds?.map { it.toLong() } ?: listOf()
-                    call.respond(AdService.getAdsResponses(type, tags))
+                    val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
+                    call.respond(AdService.getUsersAds(userId))
                 }
 
                 post("", {
