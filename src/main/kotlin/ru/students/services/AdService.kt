@@ -72,4 +72,7 @@ object AdService {
             )
         )
     }
+    fun approveAd(adId: Long){
+        AdRepo.setIsModeratedForAd(adId, true)
+    }
 }

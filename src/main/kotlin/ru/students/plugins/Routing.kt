@@ -9,4 +9,5 @@ fun Application.configureRouting() {
     adRouting()
     fileRouting()
     balanceRouting()
+    moderatorRouting()
 }
