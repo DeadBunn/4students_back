@@ -1,15 +1,13 @@
 package ru.students.repos
 
 import io.ktor.http.cio.internals.*
-import org.ktorm.dsl.eq
-import org.ktorm.dsl.insert
-import org.ktorm.dsl.insertAndGenerateKey
-import org.ktorm.dsl.update
+import org.ktorm.dsl.*
 import org.ktorm.entity.find
 import org.ktorm.entity.sequenceOf
 import org.ktorm.entity.toList
 import ru.students.dtos.requests.CreateAdRequest
 import ru.students.models.ad.*
+import ru.students.models.user.Users
 import ru.vibelab.utils.DatabaseConnection
 import java.time.LocalDate
 
@@ -70,6 +68,39 @@ object AdRepo {
             set(it.isModerated, isModerated)
             where {
                 it.id eq adId
+            }
+        }
+    }
+
+    fun requestForAd(adId: Long, userId: Long) {
+        db.insert(AdsCandidates) {
+            set(it.adId, adId)
+            set(it.candidateId, userId)
+        }
+    }
+
+    fun setExecutor(adId: Long, executorId: Long) {
+        db.update(Ads) {
+            set(it.executorId, executorId)
+            where {
+                it.id eq adId
+            }
+        }
+    }
+
+    fun finishExecution(adId: Long, executorId: Long, price: Int) {
+        db.useTransaction {
+            db.update(Ads) {
+                set(it.isFinished, true)
+                where {
+                    it.id eq adId
+                }
+            }
+            db.update(Users) {
+                set(it.balance, it.balance + price)
+                where {
+                    it.id eq executorId
+                }
             }
         }
     }
