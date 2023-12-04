@@ -2,6 +2,7 @@ package ru.students.routes
 
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -97,7 +98,7 @@ fun Application.adRouting() {
                         tags = listOf("Объявления")
                         description = "Отправить заявку на выполнение объявления"
                         request {
-                            pathParameter<String>("adId") {
+                            pathParameter<Long>("adId") {
                                 description = "id объявления, на которое нужно откликнуться"
                             }
                         }
@@ -107,6 +108,28 @@ fun Application.adRouting() {
                     val adId = call.parameters["adId"]?.toLong()!!
 
                     val result = AdService.requestToAd(adId, userId)
+                    call.respond(result.code, result.data ?: result.message)
+                }
+
+                put("set-executor",
+                    {
+                        tags = listOf("Объявления")
+                        description = "Выбрать исполнителя заказа"
+                        request {
+                            pathParameter<Long>("adId") {
+                                description = "id объявления, на которое нужно назначить исполнителя"
+                            }
+                            pathParameter<Long>("executorId") {
+                                description = "id пользователя, которого нужно назначить исполнителем"
+                            }
+                        }
+                    }) {
+                    val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
+                    val adId = call.parameters["adId"]?.toLong()!!
+                    val executorId = call.parameters["executorId"]?.toLong()!!
+
+                    val result = AdService.setExecutorToAd(userId, adId, executorId)
+
                     call.respond(result.code, result.data ?: result.message)
                 }
             }

@@ -16,10 +16,13 @@ object AdService {
     fun getAdsResponses(type: String?, tagIds: List<Long>, isModerated: Boolean?): List<AdResponse> {
 
         return AdRepo.getAdsList()
+            .asSequence()
             .filter { type == null || it.type.name == type }
             .filter { tagIds.isEmpty() || it.tags.map { tag -> tag.id }.any { id: Long -> id in tagIds } }
             .filter { isModerated == null || it.isModerated == isModerated }
+            .filter { it.executor == null }
             .map(AdMapper::toResponse)
+            .toList()
     }
 
     fun getUsersAds(userId: Long, type: String?, tagIds: List<Long>): List<AdForUserResponse> {
@@ -92,6 +95,13 @@ object AdService {
             )
         }
 
+        if (ad.user.id == userId) {
+            return BaseResponse(
+                code = HttpStatusCode.MethodNotAllowed,
+                message = "Нельзя откликнуться на свое объявление"
+            )
+        }
+
         if (ad.candidates.map { it.id }.contains(userId)) {
             return BaseResponse(
                 code = HttpStatusCode.BadRequest,
@@ -103,5 +113,38 @@ object AdService {
         return BaseResponse(
             data = "Вы успешно откликнулись на объявление"
         )
+    }
+
+    fun setExecutorToAd(userId: Long, adId: Long, executorId: Long): BaseResponse<String> {
+        val ad = AdRepo.findAdById(adId) ?: return BaseResponse(
+            code = HttpStatusCode.NotFound,
+            message = "Объявление не найдено"
+        )
+
+        if (ad.user.id != userId) return BaseResponse(
+            code = HttpStatusCode.MethodNotAllowed,
+            message = "Назначить может только автор объявления"
+        )
+
+        if (ad.type != AdType.ORDER) {
+            return BaseResponse(
+                code = HttpStatusCode.BadRequest,
+                message = "Назначить исполнителя можно только на заказ"
+            )
+        }
+
+        if (ad.executor != null) return BaseResponse(
+            code = HttpStatusCode.MethodNotAllowed,
+            message = "Вы уже назначили исполнителя"
+        )
+
+        if (!ad.candidates.map { it.id }.contains(executorId)) return BaseResponse(
+            code = HttpStatusCode.MethodNotAllowed,
+            message = "Назначить можно только откликнувшихся пользователей"
+        )
+
+        AdRepo.setExecutor(adId, executorId)
+
+        return BaseResponse(data = "Вы успешно назначили исполнителя")
     }
 }

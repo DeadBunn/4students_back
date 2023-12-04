@@ -80,4 +80,13 @@ object AdRepo {
             set(it.candidateId, userId)
         }
     }
+
+    fun setExecutor(adId: Long, executorId: Long) {
+        db.update(Ads) {
+            set(it.executorId, executorId)
+            where {
+                it.id eq adId
+            }
+        }
+    }
 }
