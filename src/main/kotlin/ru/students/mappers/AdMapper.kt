@@ -1,5 +1,6 @@
 package ru.students.mappers
 
+import ru.students.dtos.AdForUserResponse
 import ru.students.dtos.AdResponse
 import ru.students.models.ad.Ad
 
@@ -19,6 +20,16 @@ object AdMapper {
             type = ad.type,
             files = files,
             isModerated = ad.isModerated
+        )
+    }
+
+    fun toUserResponse(ad: Ad): AdForUserResponse {
+
+        val candidates = ad.candidates.map(UserMapper::toResponse)
+
+        return AdForUserResponse(
+            ad = toResponse(ad),
+            candidates = candidates
         )
     }
 }

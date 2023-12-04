@@ -73,4 +73,11 @@ object AdRepo {
             }
         }
     }
+
+    fun requestForAd(adId: Long, userId: Long) {
+        db.insert(AdsCandidates) {
+            set(it.adId, adId)
+            set(it.candidateId, userId)
+        }
+    }
 }

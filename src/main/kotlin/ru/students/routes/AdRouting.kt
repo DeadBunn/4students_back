@@ -10,6 +10,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import ru.students.dtos.AdForUserResponse
 import ru.students.dtos.AdResponse
 import ru.students.dtos.requests.CreateAdRequest
 import ru.students.models.ad.AdType
@@ -52,7 +53,7 @@ fun Application.adRouting() {
                     response {
                         HttpStatusCode.OK to {
                             description = "Успешная получения списка объявлений"
-                            body<List<AdResponse>>()
+                            body<List<AdForUserResponse>>()
                         }
                     }
                     request {
@@ -88,6 +89,24 @@ fun Application.adRouting() {
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
                     val multipart: MultiPartData = call.receiveMultipart()
                     val result = AdService.createAd(userId, multipart)
+                    call.respond(result.code, result.data ?: result.message)
+                }
+
+                post("request/{adId}",
+                    {
+                        tags = listOf("Объявления")
+                        description = "Отправить заявку на выполнение объявления"
+                        request {
+                            pathParameter<String>("adId") {
+                                description = "id объявления, на которое нужно откликнуться"
+                            }
+                        }
+                    }
+                ) {
+                    val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
+                    val adId = call.parameters["adId"]?.toLong()!!
+
+                    val result = AdService.requestToAd(adId, userId)
                     call.respond(result.code, result.data ?: result.message)
                 }
             }

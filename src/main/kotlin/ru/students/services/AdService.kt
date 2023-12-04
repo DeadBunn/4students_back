@@ -2,6 +2,7 @@ package ru.students.services
 
 import io.ktor.http.*
 import io.ktor.http.content.*
+import ru.students.dtos.AdForUserResponse
 import ru.students.dtos.AdResponse
 import ru.students.dtos.BaseResponse
 import ru.students.dtos.requests.CreateAdRequest
@@ -21,12 +22,12 @@ object AdService {
             .map(AdMapper::toResponse)
     }
 
-    fun getUsersAds(userId: Long, type: String?, tagIds: List<Long>): List<AdResponse> {
+    fun getUsersAds(userId: Long, type: String?, tagIds: List<Long>): List<AdForUserResponse> {
         return AdRepo.getAdsList()
             .filter { it.user.id == userId }
             .filter { type == null || it.type.name == type }
             .filter { tagIds.isEmpty() || it.tags.map { tag -> tag.id }.any { id: Long -> id in tagIds } }
-            .map(AdMapper::toResponse)
+            .map(AdMapper::toUserResponse)
     }
 
     suspend fun createAd(userId: Long, multipart: MultiPartData): BaseResponse<AdResponse> {
@@ -72,7 +73,35 @@ object AdService {
             )
         )
     }
-    fun approveAd(adId: Long){
+
+    fun approveAd(adId: Long) {
         AdRepo.setIsModeratedForAd(adId, true)
+    }
+
+    fun requestToAd(adId: Long, userId: Long): BaseResponse<String> {
+
+        val ad = AdRepo.findAdById(adId) ?: return BaseResponse(
+            code = HttpStatusCode.NotFound,
+            message = "Объявление не найдено"
+        )
+
+        if (ad.type != AdType.ORDER) {
+            return BaseResponse(
+                code = HttpStatusCode.BadRequest,
+                message = "Откликнуться можно только на заказ"
+            )
+        }
+
+        if (ad.candidates.map { it.id }.contains(userId)) {
+            return BaseResponse(
+                code = HttpStatusCode.BadRequest,
+                message = "Вы уже откликнулись на объявление"
+            )
+        }
+
+        AdRepo.requestForAd(adId, userId)
+        return BaseResponse(
+            data = "Вы успешно откликнулись на объявление"
+        )
     }
 }
