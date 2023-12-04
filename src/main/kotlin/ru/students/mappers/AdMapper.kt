@@ -31,14 +31,15 @@ object AdMapper {
 
         var executorResponse: UserResponse? = null
 
-        if (executor != null){
+        if (executor != null) {
             executorResponse = UserMapper.toResponse(executor)
         }
 
         return AdForUserResponse(
             ad = toResponse(ad),
             candidates = candidates,
-            executor = executorResponse
+            executor = executorResponse,
+            isFinished = ad.isFinished
         )
     }
 }

@@ -132,6 +132,23 @@ fun Application.adRouting() {
 
                     call.respond(result.code, result.data ?: result.message)
                 }
+
+                put("finish/{adId}",
+                    {
+                        description = "Окончить исполнение заявки, перевести деньги исполнителю"
+                        request {
+                            pathParameter<Long>("adId") {
+                                description = "id объявления, исполнение которого нужно завершить"
+                            }
+                        }
+                    }) {
+                    val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
+                    val adId = call.parameters["adId"]?.toLong()!!
+
+                    val result = AdService.finishExecution(adId, userId)
+
+                    call.respond(result.code, result.data ?: result.message)
+                }
             }
         }
     }

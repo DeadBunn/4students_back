@@ -21,6 +21,7 @@ object AdService {
             .filter { tagIds.isEmpty() || it.tags.map { tag -> tag.id }.any { id: Long -> id in tagIds } }
             .filter { isModerated == null || it.isModerated == isModerated }
             .filter { it.executor == null }
+            .filter { !it.isFinished }
             .map(AdMapper::toResponse)
             .toList()
     }
@@ -146,5 +147,32 @@ object AdService {
         AdRepo.setExecutor(adId, executorId)
 
         return BaseResponse(data = "Вы успешно назначили исполнителя")
+    }
+
+    fun finishExecution(adId: Long, userId: Long): BaseResponse<String> {
+
+        val ad = AdRepo.findAdById(adId) ?: return BaseResponse(
+            code = HttpStatusCode.NotFound,
+            message = "Объявление не найдено"
+        )
+
+        if (ad.user.id != userId) return BaseResponse(
+            code = HttpStatusCode.MethodNotAllowed,
+            message = "Завершить исполнение может только автор объявления"
+        )
+
+        if (ad.executor == null) return BaseResponse(
+            code = HttpStatusCode.NotFound,
+            message = "Исполнитель не назначен"
+        )
+
+        if (ad.isFinished) return BaseResponse(
+            code = HttpStatusCode.MethodNotAllowed,
+            message = "Объявление уже завершено"
+        )
+
+        AdRepo.finishExecution(adId, ad.executor!!.id, ad.price)
+
+        return BaseResponse(data = "Исполнение объявления успешно завершено")
     }
 }

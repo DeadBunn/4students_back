@@ -13,4 +13,5 @@ object Ads : Table<Ad>("ads") {
     val userId = long("user_id").references(Users) { it.user }
     val isModerated = boolean("is_moderated").bindTo { it.isModerated }
     val executorId = long("executor_id").references(Users) { it.executor }
+    val isFinished= boolean("is_finished").bindTo { it.isFinished }
 }

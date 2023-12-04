@@ -19,6 +19,7 @@ interface Ad : Entity<Ad> {
     val user: User
     val isModerated: Boolean
     val executor: User?
+    val isFinished: Boolean
     val tags get() = AdsTags.getList { it.adId eq id }.map { it.tag }
     val files get() = AdsFiles.getList { it.adId eq id }.map { it.file }
     val candidates get() = AdsCandidates.getList { it.adId eq id }.map { it.candidate }
