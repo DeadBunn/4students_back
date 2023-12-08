@@ -5,8 +5,10 @@ import io.ktor.http.content.*
 import ru.students.dtos.AdForUserResponse
 import ru.students.dtos.AdResponse
 import ru.students.dtos.BaseResponse
+import ru.students.dtos.TagResponse
 import ru.students.dtos.requests.CreateAdRequest
 import ru.students.mappers.AdMapper
+import ru.students.mappers.TagMapper
 import ru.students.models.ad.AdType
 import ru.students.models.user.User
 import ru.students.repos.AdRepo
@@ -24,6 +26,11 @@ object AdService {
             .filter { !it.isFinished }
             .map(AdMapper::toResponse)
             .toList()
+    }
+
+    fun getTags(): List<TagResponse> {
+        return AdRepo.getTagsList()
+            .map(TagMapper::toResponse)
     }
 
     fun getUsersAds(userId: Long, type: String?, tagIds: List<Long>): List<AdForUserResponse> {

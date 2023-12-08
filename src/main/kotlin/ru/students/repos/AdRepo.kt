@@ -17,6 +17,10 @@ object AdRepo {
         return db.sequenceOf(Ads).toList()
     }
 
+    fun getTagsList(): List<Tag>{
+        return db.sequenceOf(Tags).toList()
+    }
+
     fun createAd(request: CreateAdRequest, userId: Long, fileIds: List<Long>): Ad {
         db.useTransaction {
             val id = createAd(request, userId)

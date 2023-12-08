@@ -13,6 +13,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.students.dtos.AdForUserResponse
 import ru.students.dtos.AdResponse
+import ru.students.dtos.TagResponse
 import ru.students.dtos.requests.CreateAdRequest
 import ru.students.models.ad.AdType
 import ru.students.services.AdService
@@ -47,6 +48,20 @@ fun Application.adRouting() {
                 call.respond(AdService.getAdsResponses(type, tags, true))
             }
 
+            get("/tags",
+                {
+                    tags = listOf("Объявления")
+                    description = "Получение списка тегов"
+                    response {
+                        HttpStatusCode.OK to {
+                            description = "Успешное получение тегов"
+                            body<List<TagResponse>>()
+                        }
+                    }
+                }) {
+                call.respond(AdService.getTags())
+            }
+
             authenticate {
                 get("/my", {
                     tags = listOf("Объявления")
@@ -63,12 +78,6 @@ fun Application.adRouting() {
                         }
                         pathParameter<Long>("tag") {
                             description = "тег (можно добавлять несколько)"
-                        }
-                    }
-                    response {
-                        HttpStatusCode.OK to {
-                            description = "Успешная получения списка объявлений"
-                            body<List<AdResponse>>()
                         }
                     }
                 })
@@ -135,6 +144,7 @@ fun Application.adRouting() {
 
                 put("finish/{adId}",
                     {
+                        tags = listOf("Объявления")
                         description = "Окончить исполнение заявки, перевести деньги исполнителю"
                         request {
                             pathParameter<Long>("adId") {
