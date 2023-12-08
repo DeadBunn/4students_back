@@ -13,6 +13,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.students.dtos.AdForUserResponse
 import ru.students.dtos.AdResponse
+import ru.students.dtos.TagResponse
 import ru.students.dtos.requests.CreateAdRequest
 import ru.students.models.ad.AdType
 import ru.students.services.AdService
@@ -45,6 +46,20 @@ fun Application.adRouting() {
 
                 val tags: List<Long> = tagIds?.map { it.toLong() } ?: listOf()
                 call.respond(AdService.getAdsResponses(type, tags, true))
+            }
+
+            get("/tags",
+                {
+                    tags = listOf("Объявления")
+                    description = "Получение списка тегов"
+                    response {
+                        HttpStatusCode.OK to {
+                            description = "Успешное получение тегов"
+                            body<List<TagResponse>>()
+                        }
+                    }
+                }) {
+                call.respond(AdService.getTags())
             }
 
             authenticate {
