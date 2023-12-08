@@ -80,12 +80,6 @@ fun Application.adRouting() {
                             description = "тег (можно добавлять несколько)"
                         }
                     }
-                    response {
-                        HttpStatusCode.OK to {
-                            description = "Успешная получения списка объявлений"
-                            body<List<AdResponse>>()
-                        }
-                    }
                 })
                 {
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
@@ -150,6 +144,7 @@ fun Application.adRouting() {
 
                 put("finish/{adId}",
                     {
+                        tags = listOf("Объявления")
                         description = "Окончить исполнение заявки, перевести деньги исполнителю"
                         request {
                             pathParameter<Long>("adId") {
