@@ -29,8 +29,8 @@ fun Application.adRouting() {
                     pathParameter<AdType>("type") {
                         description = "SERVICE - услуга, ORDER - заказ"
                     }
-                    pathParameter<Long>("tag") {
-                        description = "тег (можно добавлять несколько)"
+                    pathParameter<Long>("title") {
+                        description = "название"
                     }
                 }
                 response {
@@ -42,10 +42,9 @@ fun Application.adRouting() {
             })
             {
                 val type = call.parameters["type"]
-                val tagIds = call.parameters.getAll("tag")
+                val title = call.parameters["title"]
 
-                val tags: List<Long> = tagIds?.map { it.toLong() } ?: listOf()
-                call.respond(AdService.getAdsResponses(type, tags, true))
+                call.respond(AdService.getAdsResponses(type, title, true))
             }
 
             get("/tags",
@@ -76,17 +75,16 @@ fun Application.adRouting() {
                         pathParameter<AdType>("type") {
                             description = "SERVICE - услуга, ORDER - заказ"
                         }
-                        pathParameter<Long>("tag") {
-                            description = "тег (можно добавлять несколько)"
+                        pathParameter<Long>("title") {
+                            description = "название"
                         }
                     }
                 })
                 {
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
                     val type = call.parameters["type"]
-                    val tagIds = call.parameters.getAll("tag")
-                    val tags: List<Long> = tagIds?.map { it.toLong() } ?: listOf()
-                    call.respond(AdService.getUsersAds(userId, type, tags))
+                    val title = call.parameters["title"]
+                    call.respond(AdService.getUsersAds(userId, type, title))
                 }
 
                 post("", {
@@ -94,6 +92,7 @@ fun Application.adRouting() {
                     description = "Создание объявления"
                     request {
                         body<CreateAdRequest>()
+                        body<MultiPartData>()
                     }
                 }) {
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()

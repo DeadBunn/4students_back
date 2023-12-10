@@ -22,8 +22,8 @@ fun Application.moderatorRouting() {
                         pathParameter<AdType>("type") {
                             description = "SERVICE - услуга, ORDER - заказ"
                         }
-                        pathParameter<Long>("tag") {
-                            description = "тег (можно добавлять несколько)"
+                        pathParameter<Long>("title") {
+                            description = "название"
                         }
                     }
                     response {
@@ -34,10 +34,8 @@ fun Application.moderatorRouting() {
                     }
                 }) {
                     val type = call.parameters["type"]
-                    val tagIds = call.parameters.getAll("tag")
-
-                    val tags: List<Long> = tagIds?.map { it.toLong() } ?: listOf()
-                    call.respond(AdService.getAdsResponses(type, tags, false))
+                    val title = call.parameters["title"]
+                    call.respond(AdService.getAdsResponses(type, title, false))
                 }
 
                 put("/approve/{adId}", {
