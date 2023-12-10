@@ -21,14 +21,13 @@ fun Application.module() {
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Delete)
         allowHeader(HttpHeaders.Authorization)
-        exposeHeader(HttpHeaders.Authorization)
-        allowHeader(HttpHeaders.AccessControlAllowHeaders)
-        exposeHeader(HttpHeaders.AccessControlAllowHeaders)
-        allowHeader(HttpHeaders.AccessControlAllowOrigin)
-        exposeHeader(HttpHeaders.AccessControlAllowOrigin)
         allowHeader(HttpHeaders.ContentType)
-        exposeHeader(HttpHeaders.ContentType)
         allowCredentials = true
+        allowNonSimpleContentTypes = true
+        allowHeader("Access-Control-Allow-Origin")
+        allowHeader("Access-Control-Allow-Credentials")
+        allowHeader("Access-Control-Allow-Methods")
+        allowHeader("Access-Control-Allow-Headers")
         anyHost()
     }
     configureSerialization()
