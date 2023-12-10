@@ -15,12 +15,12 @@ import ru.students.repos.AdRepo
 import ru.students.repos.UserRepo
 
 object AdService {
-    fun getAdsResponses(type: String?, tagIds: List<Long>, isModerated: Boolean?): List<AdResponse> {
+    fun getAdsResponses(type: String?, title: String?, isModerated: Boolean?): List<AdResponse> {
 
         return AdRepo.getAdsList()
             .asSequence()
             .filter { type == null || it.type.name == type }
-            .filter { tagIds.isEmpty() || it.tags.map { tag -> tag.id }.any { id: Long -> id in tagIds } }
+            .filter { title == null || it.title.lowercase().contains(title.lowercase()) }
             .filter { isModerated == null || it.isModerated == isModerated }
             .filter { it.executor == null }
             .filter { !it.isFinished }
@@ -33,11 +33,11 @@ object AdService {
             .map(TagMapper::toResponse)
     }
 
-    fun getUsersAds(userId: Long, type: String?, tagIds: List<Long>): List<AdForUserResponse> {
+    fun getUsersAds(userId: Long, type: String?, title: String?): List<AdForUserResponse> {
         return AdRepo.getAdsList()
             .filter { it.user.id == userId }
             .filter { type == null || it.type.name == type }
-            .filter { tagIds.isEmpty() || it.tags.map { tag -> tag.id }.any { id: Long -> id in tagIds } }
+            .filter { title == null || it.title.lowercase().contains(title.lowercase()) }
             .map(AdMapper::toUserResponse)
     }
 
