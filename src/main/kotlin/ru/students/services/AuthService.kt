@@ -24,7 +24,8 @@ object AuthService {
             BaseResponse(
                 data = JWTResponse(
                     accessToken = TokenManager.generateAccessToken(user),
-                    refreshToken = refreshToken
+                    refreshToken = refreshToken,
+                    id = user.id
                 )
             )
         } else error
@@ -58,7 +59,8 @@ object AuthService {
             BaseResponse(
                 data = JWTResponse(
                     accessToken = TokenManager.generateAccessToken(user),
-                    refreshToken = refreshToken
+                    refreshToken = refreshToken,
+                    id = user.id
                 )
             )
         } else {
