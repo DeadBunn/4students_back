@@ -14,7 +14,7 @@ import ru.students.models.user.User
 import ru.students.repos.AdRepo
 import ru.students.repos.UserRepo
 
-object AdService {
+object lAdService {
     fun getAdsResponses(type: String?, title: String?, isModerated: Boolean?): List<AdResponse> {
 
         return AdRepo.getAdsList()
@@ -40,7 +40,7 @@ object AdService {
             .filter { title == null || it.title.lowercase().contains(title.lowercase()) }
             .map(AdMapper::toUserResponse)
     }
-
+    
     fun getRequestedAds(userId: Long, type: String?, title: String?): List<AdForUserResponse> {
         return AdRepo.getAdsList()
             .filter { it.candidates.map{user -> user.id}.contains(userId) }
