@@ -96,12 +96,6 @@ object AdService {
             message = "Объявление не найдено"
         )
 
-        if (ad.type != AdType.ORDER) {
-            return BaseResponse(
-                code = HttpStatusCode.BadRequest,
-                message = "Откликнуться можно только на заказ"
-            )
-        }
 
         if (ad.user.id == userId) {
             return BaseResponse(
@@ -117,10 +111,23 @@ object AdService {
             )
         }
 
-        AdRepo.requestForAd(adId, userId)
-        return BaseResponse(
-            data = "Вы успешно откликнулись на объявление"
-        )
+        if (ad.type == AdType.ORDER) {
+            AdRepo.requestForAdOrder(adId, userId)
+            return BaseResponse(
+                data = "Вы успешно откликнулись на объявление"
+            )
+        } else {
+            val user = UserRepo.findUserById(userId)!!
+            if (user.balance < ad.price) {
+                return BaseResponse(
+                    data = "На вашем счету недостаточно средств"
+                )
+            }
+            AdRepo.requestForAdService(adId, userId, ad.price)
+            return BaseResponse(
+                data = "Вы успешно откликнулись на объявление"
+            )
+        }
     }
 
     fun setExecutorToAd(userId: Long, adId: Long, executorId: Long): BaseResponse<String> {
@@ -163,23 +170,38 @@ object AdService {
             message = "Объявление не найдено"
         )
 
-        if (ad.user.id != userId) return BaseResponse(
-            code = HttpStatusCode.MethodNotAllowed,
-            message = "Завершить исполнение может только автор объявления"
-        )
+        if (ad.type == AdType.ORDER) {
 
-        if (ad.executor == null) return BaseResponse(
-            code = HttpStatusCode.NotFound,
-            message = "Исполнитель не назначен"
-        )
+            if (ad.user.id != userId) return BaseResponse(
+                code = HttpStatusCode.MethodNotAllowed,
+                message = "Завершить исполнение может только автор объявления"
+            )
 
-        if (ad.isFinished) return BaseResponse(
-            code = HttpStatusCode.MethodNotAllowed,
-            message = "Объявление уже завершено"
-        )
+            if (ad.executor == null) return BaseResponse(
+                code = HttpStatusCode.NotFound,
+                message = "Исполнитель не назначен"
+            )
 
-        AdRepo.finishExecution(adId, ad.executor!!.id, ad.price)
+            if (ad.isFinished) return BaseResponse(
+                code = HttpStatusCode.MethodNotAllowed,
+                message = "Объявление уже завершено"
+            )
 
-        return BaseResponse(data = "Исполнение объявления успешно завершено")
+            AdRepo.finishExecution(adId, ad.executor!!.id, ad.price)
+
+            return BaseResponse(data = "Исполнение объявления успешно завершено")
+        } else {
+
+            if (!ad.candidates.map { it.id }.contains(userId)) {
+                return BaseResponse(
+                    code = HttpStatusCode.MethodNotAllowed,
+                    message = "Вы не отликались на это объявление"
+                )
+            }
+
+            AdRepo.finishService(adId, userId, ad.user.id, ad.price)
+
+            return BaseResponse(data = "Заказ объявления успешно завершено")
+        }
     }
 }

@@ -17,7 +17,7 @@ object AdRepo {
         return db.sequenceOf(Ads).toList()
     }
 
-    fun getTagsList(): List<Tag>{
+    fun getTagsList(): List<Tag> {
         return db.sequenceOf(Tags).toList()
     }
 
@@ -76,10 +76,25 @@ object AdRepo {
         }
     }
 
-    fun requestForAd(adId: Long, userId: Long) {
+    fun requestForAdOrder(adId: Long, userId: Long) {
         db.insert(AdsCandidates) {
             set(it.adId, adId)
             set(it.candidateId, userId)
+        }
+    }
+
+    fun requestForAdService(adId: Long, userId: Long, adPrice: Int) {
+        db.useTransaction {
+            db.insert(AdsCandidates) {
+                set(it.adId, adId)
+                set(it.candidateId, userId)
+            }
+            db.update(Users) {
+                set(it.balance, it.balance - adPrice)
+                where {
+                    it.id eq userId
+                }
+            }
         }
     }
 
@@ -101,6 +116,21 @@ object AdRepo {
                 }
             }
             db.update(Users) {
+                set(it.balance, it.balance + price)
+                where {
+                    it.id eq executorId
+                }
+            }
+        }
+    }
+
+    fun finishService(adId: Long, userId: Long, executorId: Long, price: Int){
+        db.useTransaction {
+            db.delete(AdsCandidates){
+                it.adId eq adId
+                it.candidateId eq userId
+            }
+            db.update(Users){
                 set(it.balance, it.balance + price)
                 where {
                     it.id eq executorId
