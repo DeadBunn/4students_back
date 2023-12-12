@@ -41,6 +41,14 @@ object AdService {
             .map(AdMapper::toUserResponse)
     }
 
+    fun getRequestedAds(userId: Long, type: String?, title: String?): List<AdForUserResponse> {
+        return AdRepo.getAdsList()
+            .filter { it.candidates.map{user -> user.id}.contains(userId) }
+            .filter { type == null || it.type.name == type }
+            .filter { title == null || it.title.lowercase().contains(title.lowercase()) }
+            .map(AdMapper::toUserResponse)
+    }
+
     suspend fun createAd(userId: Long, multipart: MultiPartData): BaseResponse<AdResponse> {
         val fileParts = mutableListOf<PartData.FileItem>()
         var jsonValue: String? = null
