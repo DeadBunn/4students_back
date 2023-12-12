@@ -11,7 +11,6 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.students.dtos.AdForUserResponse
 import ru.students.dtos.AdResponse
 import ru.students.dtos.TagResponse
 import ru.students.dtos.requests.CreateAdRequest
@@ -68,7 +67,7 @@ fun Application.adRouting() {
                     response {
                         HttpStatusCode.OK to {
                             description = "Успешная получения списка объявлений"
-                            body<List<AdForUserResponse>>()
+                            body<List<AdResponse>>()
                         }
                     }
                     request {
@@ -93,7 +92,7 @@ fun Application.adRouting() {
                     response {
                         HttpStatusCode.OK to {
                             description = "Успешная получения списка объявлений"
-                            body<List<AdForUserResponse>>()
+                            body<List<AdResponse>>()
                         }
                     }
                     request {
