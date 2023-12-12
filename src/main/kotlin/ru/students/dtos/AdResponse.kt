@@ -11,5 +11,8 @@ data class AdResponse(
     val description: String,
     val type: AdType,
     val files: List<FileResponse>,
-    val isModerated: Boolean
+    val isModerated: Boolean,
+    val candidates: List<UserResponse>,
+    val executor: UserResponse?,
+    val isFinished: Boolean
 )

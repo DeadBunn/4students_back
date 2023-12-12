@@ -41,7 +41,10 @@ object RegisterService {
             data = JWTResponse(
                 accessToken = TokenManager.generateAccessToken(user),
                 refreshToken = refreshToken,
-                id = user.id
+                id = user.id,
+                login = user.login,
+                email = user.email,
+                role = user.role
             )
         )
     }

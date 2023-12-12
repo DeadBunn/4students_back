@@ -76,6 +76,12 @@ object AdRepo {
         }
     }
 
+    fun deleteAd(adId: Long) {
+        db.delete(Ads) {
+            it.id eq adId
+        }
+    }
+
     fun requestForAdOrder(adId: Long, userId: Long) {
         db.insert(AdsCandidates) {
             set(it.adId, adId)
@@ -124,13 +130,13 @@ object AdRepo {
         }
     }
 
-    fun finishService(adId: Long, userId: Long, executorId: Long, price: Int){
+    fun finishService(adId: Long, userId: Long, executorId: Long, price: Int) {
         db.useTransaction {
-            db.delete(AdsCandidates){
+            db.delete(AdsCandidates) {
                 it.adId eq adId
                 it.candidateId eq userId
             }
-            db.update(Users){
+            db.update(Users) {
                 set(it.balance, it.balance + price)
                 where {
                     it.id eq executorId

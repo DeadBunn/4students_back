@@ -2,7 +2,6 @@ package ru.students.services
 
 import io.ktor.http.*
 import io.ktor.http.content.*
-import ru.students.dtos.AdForUserResponse
 import ru.students.dtos.AdResponse
 import ru.students.dtos.BaseResponse
 import ru.students.dtos.TagResponse
@@ -33,20 +32,20 @@ object AdService {
             .map(TagMapper::toResponse)
     }
 
-    fun getUsersAds(userId: Long, type: String?, title: String?): List<AdForUserResponse> {
+    fun getUsersAds(userId: Long, type: String?, title: String?): List<AdResponse> {
         return AdRepo.getAdsList()
             .filter { it.user.id == userId }
             .filter { type == null || it.type.name == type }
             .filter { title == null || it.title.lowercase().contains(title.lowercase()) }
-            .map(AdMapper::toUserResponse)
+            .map(AdMapper::toResponse)
     }
-    
-    fun getRequestedAds(userId: Long, type: String?, title: String?): List<AdForUserResponse> {
+
+    fun getRequestedAds(userId: Long, type: String?, title: String?): List<AdResponse> {
         return AdRepo.getAdsList()
-            .filter { it.candidates.map{user -> user.id}.contains(userId) }
+            .filter { it.candidates.map { user -> user.id }.contains(userId) }
             .filter { type == null || it.type.name == type }
             .filter { title == null || it.title.lowercase().contains(title.lowercase()) }
-            .map(AdMapper::toUserResponse)
+            .map(AdMapper::toResponse)
     }
 
     suspend fun createAd(userId: Long, multipart: MultiPartData): BaseResponse<AdResponse> {
@@ -95,6 +94,21 @@ object AdService {
 
     fun approveAd(adId: Long) {
         AdRepo.setIsModeratedForAd(adId, true)
+    }
+
+    fun deleteAd(adId: Long): BaseResponse<String> {
+        val ad = AdRepo.findAdById(adId) ?: return BaseResponse(
+            code = HttpStatusCode.NotFound,
+            message = "Объявление не найдено"
+        )
+
+        if (ad.isModerated) return BaseResponse(
+            code = HttpStatusCode.MethodNotAllowed,
+            message = "Нельзя удалить проверенное объявление"
+        )
+
+        AdRepo.deleteAd(ad.id)
+        return BaseResponse(data = "Объявление успешно отклонено")
     }
 
     fun requestToAd(adId: Long, userId: Long): BaseResponse<String> {
