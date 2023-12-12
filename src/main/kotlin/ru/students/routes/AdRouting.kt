@@ -87,6 +87,31 @@ fun Application.adRouting() {
                     call.respond(AdService.getUsersAds(userId, type, title))
                 }
 
+                get("/requested", {
+                    tags = listOf("Объявления")
+                    description = "Получения списка объявлений, на которые пользователь кинул реквест"
+                    response {
+                        HttpStatusCode.OK to {
+                            description = "Успешная получения списка объявлений"
+                            body<List<AdForUserResponse>>()
+                        }
+                    }
+                    request {
+                        pathParameter<AdType>("type") {
+                            description = "SERVICE - услуга, ORDER - заказ"
+                        }
+                        pathParameter<Long>("title") {
+                            description = "название"
+                        }
+                    }
+                })
+                {
+                    val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
+                    val type = call.parameters["type"]
+                    val title = call.parameters["title"]
+                    call.respond(AdService.getRequestedAds(userId, type, title))
+                }
+
                 post("", {
                     tags = listOf("Объявления")
                     description = "Создание объявления"
