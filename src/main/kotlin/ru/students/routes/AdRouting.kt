@@ -89,7 +89,7 @@ fun Application.adRouting() {
 
                 get("/requested", {
                     tags = listOf("Объявления")
-                    description = "Получения списка объявлений, на которые пользователь кинул реквест"
+                    description = "Получения списка объявлений, на которые откликнулся пользователь"
                     response {
                         HttpStatusCode.OK to {
                             description = "Успешная получения списка объявлений"
