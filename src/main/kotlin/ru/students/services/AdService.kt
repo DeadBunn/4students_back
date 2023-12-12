@@ -14,7 +14,7 @@ import ru.students.models.user.User
 import ru.students.repos.AdRepo
 import ru.students.repos.UserRepo
 
-object lAdService {
+object AdService {
     fun getAdsResponses(type: String?, title: String?, isModerated: Boolean?): List<AdResponse> {
 
         return AdRepo.getAdsList()
