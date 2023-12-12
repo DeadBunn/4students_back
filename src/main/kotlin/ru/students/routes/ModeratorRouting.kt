@@ -1,5 +1,6 @@
 package ru.students.routes
 
+import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.http.*
@@ -50,6 +51,21 @@ fun Application.moderatorRouting() {
                     val adId = call.parameters["adId"] ?: call.respond("Объявление не найден")
                     AdService.approveAd(adId.toString().toLong())
                     call.respond("Объявление успешно одобрено")
+                }
+
+                delete("/delete/{adId}", {
+                    tags = listOf("Модерирование")
+                    description = "Отклонить объявление"
+                    request {
+                        pathParameter<Long>("adId") {
+                            description = "ID объявления, которое нужно удалить"
+                        }
+                    }
+                }) {
+                    val adId = call.parameters["adId"] ?: call.respond("Объявление не найден")
+
+                    val result = AdService.deleteAd(adId.toString().toLong())
+                    call.respond(result.code, result.data ?: result.message)
                 }
             }
         }
