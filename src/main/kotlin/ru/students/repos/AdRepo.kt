@@ -77,8 +77,19 @@ object AdRepo {
     }
 
     fun deleteAd(adId: Long) {
-        db.delete(Ads) {
-            it.id eq adId
+        db.useTransaction {
+            db.delete(AdsCandidates){
+                it.adId eq  adId
+            }
+            db.delete(AdsTags){
+                it.adId eq adId
+            }
+            db.delete(AdsFiles){
+                it.adId eq  adId
+            }
+            db.delete(Ads) {
+                it.id eq adId
+            }
         }
     }
 
