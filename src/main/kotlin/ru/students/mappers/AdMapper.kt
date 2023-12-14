@@ -6,7 +6,7 @@ import ru.students.models.ad.Ad
 
 object AdMapper {
 
-    fun toResponse(ad: Ad, initCandidates: Boolean = false): AdResponse {
+    fun toResponse(ad: Ad, initCandidates: Boolean = true): AdResponse {
         val tags = ad.tags.map(TagMapper::toResponse)
         val user = UserMapper.toResponse(ad.user)
 

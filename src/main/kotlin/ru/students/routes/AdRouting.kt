@@ -42,8 +42,9 @@ fun Application.adRouting() {
             {
                 val type = call.parameters["type"]
                 val title = call.parameters["title"]
+                val userId: Long? = call.principal<JWTPrincipal>()?.payload?.claims?.get("userId")?.asLong()
 
-                call.respond(AdService.getAdsResponses(type, title, true))
+                call.respond(AdService.getAdsResponses(type, title, true, userId))
             }
 
             get("/tags",
