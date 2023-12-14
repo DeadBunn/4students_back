@@ -14,7 +14,7 @@ import ru.students.repos.AdRepo
 import ru.students.repos.UserRepo
 
 object AdService {
-    fun getAdsResponses(type: String?, title: String?, isModerated: Boolean?): List<AdResponse> {
+    fun getAdsResponses(type: String?, title: String?, isModerated: Boolean?, userId: Long? = null): List<AdResponse> {
 
         return AdRepo.getAdsList()
             .asSequence()
@@ -22,6 +22,7 @@ object AdService {
             .filter { title == null || it.title.lowercase().contains(title.lowercase()) }
             .filter { isModerated == null || it.isModerated == isModerated }
             .filter { it.executor == null }
+            .filter { userId == null || !it.candidates.map { candidate -> candidate.id }.contains(userId) }
             .filter { !it.isFinished }
             .map(AdMapper::toResponse)
             .toList()
