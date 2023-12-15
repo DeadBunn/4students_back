@@ -85,6 +85,13 @@ object AdService {
             )
         }
 
+        if (request.title.isEmpty()) {
+            return BaseResponse(
+                code = HttpStatusCode.MethodNotAllowed,
+                message = "Название не может быть пустым"
+            )
+        }
+
         val fileIds = mutableListOf<Long>()
         fileParts.forEach { filePart ->
             val fileId = FileService.saveFile(filePart)
