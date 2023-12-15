@@ -9,5 +9,6 @@ data class JWTResponse(
     val id: Long,
     val role: Role,
     val email: String,
-    val login: String
+    val login: String,
+    val balance: Int
 )

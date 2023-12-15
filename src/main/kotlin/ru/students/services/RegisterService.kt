@@ -44,7 +44,8 @@ object RegisterService {
                 id = user.id,
                 login = user.login,
                 email = user.email,
-                role = user.role
+                role = user.role,
+                balance = user.balance
             )
         )
     }
