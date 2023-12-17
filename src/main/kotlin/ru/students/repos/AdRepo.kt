@@ -76,7 +76,7 @@ object AdRepo {
         }
     }
 
-    fun deleteAd(adId: Long) {
+    fun deleteAd(adId: Long, creatorId: Long, price: Int) {
         db.useTransaction {
             db.delete(AdsCandidates){
                 it.adId eq  adId
@@ -90,6 +90,7 @@ object AdRepo {
             db.delete(Ads) {
                 it.id eq adId
             }
+            UserRepo.replenishBalance(creatorId, price)
         }
     }
 
