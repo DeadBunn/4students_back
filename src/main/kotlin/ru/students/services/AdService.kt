@@ -125,7 +125,7 @@ object AdService {
             message = "Нельзя удалить проверенное объявление"
         )
 
-        AdRepo.deleteAd(ad.id)
+        AdRepo.deleteAd(ad.id, ad.user.id, ad.price)
         return BaseResponse(data = "Объявление успешно отклонено")
     }
 

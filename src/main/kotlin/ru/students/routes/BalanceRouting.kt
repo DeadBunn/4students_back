@@ -1,6 +1,7 @@
 package ru.students.routes
 
 import io.github.smiley4.ktorswaggerui.dsl.put
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -26,7 +27,7 @@ fun Application.balanceRouting() {
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
 
                     if (sum == null || sum <= 0) {
-                        call.respond("Неверная сумма: $sum")
+                        call.respond(HttpStatusCode.BadRequest, "Неверная сумма: $sum")
                     } else {
                         UserService.replenishBalance(userId, sum)
                     }
@@ -48,7 +49,7 @@ fun Application.balanceRouting() {
                     val userId: Long = call.principal<JWTPrincipal>()!!.payload.claims["userId"]!!.asLong()
 
                     if (sum == null || sum <= 0) {
-                        call.respond("Неверная сумма: $sum")
+                        call.respond(HttpStatusCode.BadRequest, "Неверная сумма: $sum")
                     } else {
                         val result = UserService.withDrawBalance(userId, sum)
                         call.respond(result.code, result.data ?: result.message)

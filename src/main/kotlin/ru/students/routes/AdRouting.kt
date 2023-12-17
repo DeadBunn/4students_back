@@ -42,9 +42,8 @@ fun Application.adRouting() {
             {
                 val type = call.parameters["type"]
                 val title = call.parameters["title"]
-                val userId: Long? = call.principal<JWTPrincipal>()?.payload?.claims?.get("userId")?.asLong()
 
-                call.respond(AdService.getAdsResponses(type, title, true, userId))
+                call.respond(AdService.getAdsResponses(type, title, true, null))
             }
 
             get("/tags",
@@ -62,6 +61,33 @@ fun Application.adRouting() {
             }
 
             authenticate {
+
+                get("/all", {
+                    tags = listOf("Объявления")
+                    description = "Получения списка объявлений"
+                    request {
+                        pathParameter<AdType>("type") {
+                            description = "SERVICE - услуга, ORDER - заказ"
+                        }
+                        pathParameter<Long>("title") {
+                            description = "название"
+                        }
+                    }
+                    response {
+                        HttpStatusCode.OK to {
+                            description = "Успешная получения списка объявлений"
+                            body<List<AdResponse>>()
+                        }
+                    }
+                })
+                {
+                    val type = call.parameters["type"]
+                    val title = call.parameters["title"]
+                    val userId: Long? = call.principal<JWTPrincipal>()?.payload?.claims?.get("userId")?.asLong()
+
+                    call.respond(AdService.getAdsResponses(type, title, true, userId))
+                }
+
                 get("/my", {
                     tags = listOf("Объявления")
                     description = "Получения списка своих объявлений"
